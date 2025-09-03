@@ -17,8 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from blog.views import my_blog
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('blog/', my_blog, name='blog'),
+    path('', RedirectView.as_view(url='/blog/', permanent=False)),
 ]
