@@ -1,4 +1,24 @@
 {
-  "python-envs.pythonProjects": [],
-  "djlint.showInstallError": false
+  "files.associations": {
+    "**/templates/**/*.html": "django-html",
+    // (optional) If some templates live elsewhere:
+    "*.djhtml": "django-html",
+    "*.jinja": "django-html"
+  },
+
+  // Formatter: DjLint for Django templates
+  "editor.formatOnSave": true,
+  "[django-html]": {
+    "editor.defaultFormatter": "monosans.djlint"
+  },
+
+  // Optional: Prettier for plain HTML
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // Emmet inside Django templates (handy)
+  "emmet.includeLanguages": {
+    "django-html": "html"
+  }
 }
