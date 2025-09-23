@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      {% if about %}
+        <h1 class="mb-3">{{ about.title }}</h1>
+        <div class="mb-4">
+          {{ about.content|safe }}
+        </div>
+        <p class="text-muted">Last updated: {{ about.updated_on }}</p>
+      {% else %}
+        <h1>About</h1>
+        <p>About content coming soon.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block copyright %}
+  Copyright {% now "Y" %} Dario
+{% endblock %}
