@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Post, Comment
 from django_summernote.admin import SummernoteModelAdmin
 
-# Customizzazione del modello Post nell'admin
+# Customising the Post template in the admin panel
 
 
 @admin.register(Post)
