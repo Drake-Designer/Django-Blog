@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <!-- User greeting -->
+                <h2 class="mb-4">Hello, {{ user.username }} 👋</h2>
+                <p>Welcome to your profile page. Here are all your comments:</p>
+                <!-- Comments list -->
+                {% if comments %}
+                    <ul class="list-group">
+                        {% for comment in comments %}
+                            <li class="list-group-item">
+                                <p>
+                                    <strong>On post:</strong>
+                                    <a href="{{ comment.post.get_absolute_url }}">{{ comment.post.title }}</a>
+                                </p>
+                                <p>{{ comment.body }}</p>
+                                <small class="text-muted">
+                                    Posted on {{ comment.created_on|date:"M d, Y H:i" }}
+                                    {% if not comment.approved %}<span class="badge bg-warning text-dark">Pending approval</span>{% endif %}
+                                </small>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="mt-3">You haven’t written any comments yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from .models import Post
 from .forms import CommentForm
@@ -45,7 +46,7 @@ def post_detail(request, slug):
             comment = comment_form.save(commit=False)
             comment.post = post
             if request.user.is_authenticated:
-                comment.author = request.user  # Assign logged-in user as author
+                comment.author = request.user
             comment.save()
             messages.success(
                 request, "Comment submitted and awaiting approval")
@@ -64,4 +65,27 @@ def post_detail(request, slug):
             "comment_count": comment_count,
             "comment_form": comment_form,
         },
+    )
+
+
+@login_required
+def profile_page(request):
+    """
+    Display the profile page for the logged-in user.
+
+    **Context**
+
+    ``user_obj`` : the current authenticated user
+    ``comments`` : list of comments made by this user
+
+    **Template:** account/profile.html
+    """
+    user_obj = request.user
+    comments = user_obj.commenter.select_related(
+        "post").order_by("-created_on")
+
+    return render(
+        request,
+        "blog/profile.html",
+        {"user_obj": user_obj, "comments": comments},
     )
