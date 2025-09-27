@@ -19,43 +19,37 @@ class PostList(generic.ListView):
 
 
 def post_detail(request, slug):
-    """
-    Display a single blog post and handle comment submissions.
+    # Post pubblicato o 404
+    post = get_object_or_404(Post.objects.filter(status=1), slug=slug)
 
-    """
+    # ➜ PASSA TUTTI i commenti al template (approvati + pending)
+    comments = post.comments.all().order_by("-created_on")
 
-    # Get the post object or return 404 if not found
-    queryset = Post.objects.filter(status=1)
-    post = get_object_or_404(queryset, slug=slug)
-
-    # Fetch only approved comments, ordered by creation date
-    comments = post.comments.filter(approved=True).order_by("-created_on")
-    comment_count = comments.count()
+    # ➜ Conta solo gli APPROVATI per il badge
+    comment_count = post.comments.filter(approved=True).count()
 
     if request.method == "POST":
-        print("Received a POST request")
         comment_form = CommentForm(data=request.POST)
         if comment_form.is_valid():
             comment = comment_form.save(commit=False)
             comment.post = post
             if request.user.is_authenticated:
                 comment.author = request.user
+            # NON settare approved=True: resta False di default
             comment.save()
             messages.success(
-                request, "Comment submitted and awaiting approval"
-            )
+                request, "Comment submitted and awaiting approval")
             return redirect(post.get_absolute_url())
     else:
         comment_form = CommentForm()
 
-    print("About to render template")
     return render(
         request,
         "blog/post_detail.html",
         {
             "post": post,
-            "comments": comments,
-            "comment_count": comment_count,
+            "comments": comments,          # ora include i pending
+            "comment_count": comment_count,  # solo approvati
             "comment_form": comment_form,
         },
     )
