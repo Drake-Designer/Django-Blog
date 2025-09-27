@@ -20,14 +20,6 @@ def post_detail(request, slug):
     """
     Display a single blog post and handle comment submissions.
 
-    **Context**
-
-    ``post`` : the Post instance
-    ``comments`` : list of approved comments for the post
-    ``comment_count`` : total number of approved comments
-    ``comment_form`` : form to submit a new comment
-
-    **Template:** blog/post_detail.html
     """
 
     # Get the post object or return 404 if not found
@@ -39,23 +31,22 @@ def post_detail(request, slug):
     comment_count = comments.count()
 
     if request.method == "POST":
-        # Bind the form with submitted POST data
+        print("Received a POST request")
         comment_form = CommentForm(data=request.POST)
         if comment_form.is_valid():
-            # Save comment but don't commit yet (so we can add post and author)
             comment = comment_form.save(commit=False)
             comment.post = post
             if request.user.is_authenticated:
                 comment.author = request.user
             comment.save()
             messages.success(
-                request, "Comment submitted and awaiting approval")
-            # Redirect to avoid resubmission if the page is refreshed
+                request, "Comment submitted and awaiting approval"
+            )
             return redirect(post.get_absolute_url())
     else:
-        # For GET requests, render an empty form
         comment_form = CommentForm()
 
+    print("About to render template")
     return render(
         request,
         "blog/post_detail.html",
