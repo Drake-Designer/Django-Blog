@@ -14,16 +14,15 @@ def about_me(request):
                 "Collaboration request received! I endeavour to respond within 2 working days."
             )
             return redirect("about")
-
     else:
         collaborate_form = CollaborateForm()
 
-    about = About.objects.order_by("-updated_on").first()
+    about_instance = About.objects.order_by("-updated_on").first()
     return render(
         request,
         "about/about.html",
         {
-            "about": about,
+            "about": about_instance,
             "collaborate_form": collaborate_form,
         },
     )
