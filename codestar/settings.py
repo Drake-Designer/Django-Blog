@@ -50,6 +50,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Cloudinary
+    'cloudinary_storage',
+    'cloudinary',
+
     # Third-party apps
     'django.contrib.sites',
     'allauth',
@@ -57,12 +61,13 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'crispy_forms',
     'crispy_bootstrap5',
+    'django_summernote',
 
     # My apps
     'blog',
-    'django_summernote',
     'about',
 ]
+
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"

@@ -13,19 +13,17 @@ class PostList(generic.ListView):
     """
     Display a list of published blog posts.
     """
-    queryset = Post.objects.filter(status=1)  # Only published posts
+    queryset = Post.objects.filter(status=1)
     template_name = "blog/index.html"
     paginate_by = 6
 
 
 def post_detail(request, slug):
-    # Post pubblicato o 404
+
     post = get_object_or_404(Post.objects.filter(status=1), slug=slug)
 
-    # ➜ PASSA TUTTI i commenti al template (approvati + pending)
     comments = post.comments.all().order_by("-created_on")
 
-    # ➜ Conta solo gli APPROVATI per il badge
     comment_count = post.comments.filter(approved=True).count()
 
     if request.method == "POST":
@@ -35,7 +33,7 @@ def post_detail(request, slug):
             comment.post = post
             if request.user.is_authenticated:
                 comment.author = request.user
-            # NON settare approved=True: resta False di default
+
             comment.save()
             messages.success(
                 request, "Comment submitted and awaiting approval")
@@ -48,8 +46,8 @@ def post_detail(request, slug):
         "blog/post_detail.html",
         {
             "post": post,
-            "comments": comments,          # ora include i pending
-            "comment_count": comment_count,  # solo approvati
+            "comments": comments,
+            "comment_count": comment_count,
             "comment_form": comment_form,
         },
     )
