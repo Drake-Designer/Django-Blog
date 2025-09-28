@@ -1,22 +1,21 @@
+"""Models for the Blog app: Post and Comment."""
+
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.urls import reverse
 from cloudinary.models import CloudinaryField
-
 
 STATUS = ((0, "Draft"), (1, "Published"))
 
 
-# Create your models here.
-
-
 class Post(models.Model):
+    """Blog post model with title, slug, author, content, image and status."""
     title = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(max_length=200, unique=True)
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="blog_posts"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="blog_posts"
     )
-    featured_image = CloudinaryField('image', default='placeholder')
+    featured_image = CloudinaryField("image", default="placeholder")
     content = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(choices=STATUS, default=0)
@@ -34,10 +33,12 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
+    """Comment model linked to posts and users."""
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name="comments")
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="commenter")
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="commenter"
+    )
     body = models.TextField()
     approved = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
@@ -47,25 +48,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.body
-
-
-class About(models.Model):
-    body = models.TextField()
-    updated_on = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return "About me"
-
-
-class CollaborateRequest(models.Model):
-    name = models.CharField(max_length=100)
-    email = models.EmailField()
-    message = models.TextField()
-    read = models.BooleanField(default=False)
-    created_on = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-created_on"]
-
-    def __str__(self):
-        return f"{self.name} - {self.email}"

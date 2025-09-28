@@ -1,29 +1,28 @@
-from django.shortcuts import render, get_object_or_404, redirect, reverse
-from django.views import generic
-from django.contrib import messages
-from django.http import HttpResponseRedirect
-from .models import Post, Comment
-from django.contrib.auth.decorators import login_required
+"""Blog views: list, detail, profile, comment edit/delete."""
 
-from .models import Post
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.views import generic
+
 from .forms import CommentForm
+from .models import Comment, Post
 
 
 class PostList(generic.ListView):
-    """
-    Display a list of published blog posts.
-    """
+    """Display a paginated list of published blog posts."""
     queryset = Post.objects.filter(status=1)
     template_name = "blog/index.html"
     paginate_by = 6
 
 
 def post_detail(request, slug):
-
+    """Post detail with comments list and add-comment form."""
     post = get_object_or_404(Post.objects.filter(status=1), slug=slug)
 
     comments = post.comments.all().order_by("-created_on")
-
     comment_count = post.comments.filter(approved=True).count()
 
     if request.method == "POST":
@@ -33,7 +32,6 @@ def post_detail(request, slug):
             comment.post = post
             if request.user.is_authenticated:
                 comment.author = request.user
-
             comment.save()
             messages.success(
                 request, "Comment submitted and awaiting approval")
@@ -55,35 +53,17 @@ def post_detail(request, slug):
 
 @login_required
 def profile_page(request):
-    """
-    Display the profile page for the logged-in user.
-
-    **Context**
-
-    ``user_obj`` : the current authenticated user
-    ``comments`` : list of comments made by this user
-
-    **Template:** account/profile.html
-    """
+    """Profile page for the logged-in user, with their comments."""
     user_obj = request.user
     comments = user_obj.commenter.select_related(
         "post").order_by("-created_on")
-
-    return render(
-        request,
-        "blog/profile.html",
-        {"user_obj": user_obj, "comments": comments},
-    )
+    return render(request, "blog/profile.html", {"user_obj": user_obj, "comments": comments})
 
 
 def comment_edit(request, slug, comment_id):
-    """
-    view to edit comments
-    """
+    """Edit a comment; re-approve after changes."""
     if request.method == "POST":
-
-        queryset = Post.objects.filter(status=1)
-        post = get_object_or_404(queryset, slug=slug)
+        post = get_object_or_404(Post.objects.filter(status=1), slug=slug)
         comment = get_object_or_404(Comment, pk=comment_id)
         comment_form = CommentForm(data=request.POST, instance=comment)
 
@@ -92,27 +72,23 @@ def comment_edit(request, slug, comment_id):
             comment.post = post
             comment.approved = False
             comment.save()
-            messages.add_message(request, messages.SUCCESS, 'Comment Updated!')
+            messages.success(request, "Comment updated!")
         else:
-            messages.add_message(request, messages.ERROR,
-                                 'Error updating comment!')
+            messages.error(request, "Error updating comment!")
 
-    return HttpResponseRedirect(reverse('post_detail', args=[slug]))
+    return HttpResponseRedirect(reverse("post_detail", args=[slug]))
 
 
 def comment_delete(request, slug, comment_id):
-    """
-    view to delete comment
-    """
-    queryset = Post.objects.filter(status=1)
-    post = get_object_or_404(queryset, slug=slug)
+    """Delete a comment authored by the current user."""
+    get_object_or_404(Post.objects.filter(status=1),
+                      slug=slug)  # ensures post exists
     comment = get_object_or_404(Comment, pk=comment_id)
 
     if comment.author == request.user:
         comment.delete()
-        messages.add_message(request, messages.SUCCESS, 'Comment deleted!')
+        messages.success(request, "Comment deleted!")
     else:
-        messages.add_message(request, messages.ERROR,
-                             'You can only delete your own comments!')
+        messages.error(request, "You can only delete your own comments!")
 
-    return HttpResponseRedirect(reverse('post_detail', args=[slug]))
+    return HttpResponseRedirect(reverse("post_detail", args=[slug]))

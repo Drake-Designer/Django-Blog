@@ -15,8 +15,8 @@ from pathlib import Path
 import os
 from django.contrib.messages import constants as messages
 import dj_database_url
-if os.path.isfile('env.py'):
-    import env
+if os.path.isfile("env.py"):
+    import env  # pylint: disable=unused-import
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -79,17 +79,20 @@ LOGOUT_REDIRECT_URL = '/'
 
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
-
+    "django.middleware.security.SecurityMiddleware",
+    *(
+        ["whitenoise.middleware.WhiteNoiseMiddleware"]
+        if not DEBUG else []
+    ),
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
+
 
 ROOT_URLCONF = 'codestar.urls'
 
@@ -126,8 +129,8 @@ DATABASES = {
 }
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://*.codeinstitute-ide.net/",
-    "https://*.herokuapp.com"
+    "https://*.codeinstitute-ide.net",
+    "https://*.herokuapp.com",
 ]
 
 
@@ -157,7 +160,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "Europe/Dublin"
 
 USE_I18N = True
 
