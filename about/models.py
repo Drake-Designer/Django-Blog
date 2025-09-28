@@ -1,9 +1,15 @@
 """Models for About app."""
+
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 class About(models.Model):
-    """Simple about section with editable text."""
+    """Simple about section with profile image and editable text."""
+
+    profile_image = CloudinaryField(
+        "image", default="placeholder", blank=True, null=True
+    )
     body = models.TextField()
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -13,6 +19,7 @@ class About(models.Model):
 
 class CollaborateRequest(models.Model):
     """Stores collaboration requests from visitors."""
+
     name = models.CharField(max_length=100)
     email = models.EmailField()
     message = models.TextField()

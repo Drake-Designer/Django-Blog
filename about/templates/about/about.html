@@ -4,33 +4,34 @@
 {% block content %}
   <div class="container mt-5">
     <div class="row">
+      <!-- Profile image column -->
       <div class="col-12 col-md-4 text-center">
-        {% if about and about.profile_image %}
-          {% if "default.jpg" in about.profile_image.url or "placeholder" in about.profile_image.url %}
-            <img src="{% static 'images/about-me.jpg' %}"
-                 class="profile-image"
-                 alt="About me">
-          {% else %}
-            <img src="{{ about.profile_image.url }}"
-                 class="profile-image"
-                 alt="{{ about.title }}">
-          {% endif %}
+        {# If an About object exists and has a valid Cloudinary image (not placeholder/default) #}
+        {% if about and about.profile_image and about.profile_image.url and "placeholder" not in about.profile_image.url and "default.jpg" not in about.profile_image.url %}
+          <img src="{{ about.profile_image.url }}"
+               class="profile-image"
+               alt="About me">
         {% else %}
+          {# Fallback to local static image if no valid profile image is set #}
           <img src="{% static 'images/about-me.jpg' %}"
                class="profile-image"
                alt="About me">
         {% endif %}
       </div>
+      <!-- About text column -->
       <div class="col-12 col-md-8">
         {% if about %}
-          <h2>{{ about.title }}</h2>
-          {{ about.content|safe }}
+          <h2>About</h2>
+          {# Render the About body text (safe allows HTML formatting) #}
+          {{ about.body|safe }}
         {% else %}
+          {# Fallback if no About object exists in the database #}
           <h2>About</h2>
           <p>About content coming soon.</p>
         {% endif %}
       </div>
     </div>
+    <!-- Last updated timestamp -->
     <div class="row">
       <div class="col text-end">
         {% if about %}
@@ -40,6 +41,7 @@
         {% endif %}
       </div>
     </div>
+    <!-- Collaboration request form -->
     <div class="row justify-content-center">
       <div class="col-12 col-md-6 my-5">
         <h2>Let's collaborate!</h2>
@@ -51,6 +53,7 @@
         </p>
         <form method="post">
           {% csrf_token %}
+          {# Crispy form rendering for better Bootstrap styling #}
           {{ collaborate_form|crispy }}
           <button class="btn btn-secondary" type="submit">Submit</button>
         </form>
