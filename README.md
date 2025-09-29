@@ -1,5 +1,7 @@
 # 📝 Django Blog
 
+🌍 **Live Demo:** [Django Blog on Heroku](https://django-blog-2025-0943f6c00bee.herokuapp.com/)
+
 **Django Blog** is a full-stack web application built with **Django** that allows users to create, read, update, and delete blog posts.  
 It includes a secure authentication system, commenting features, an "About Me" section with Cloudinary integration for profile images, and a collaboration request form.  
 The project is fully deployed on **Heroku** with static and media file management via **WhiteNoise** and **Cloudinary**.
